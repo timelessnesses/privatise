@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS files (
+	id TEXT PRIMARY KEY,
+	name TEXT NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	expires_at TIMESTAMP NOT NULL,
+	original_file_extension TEXT
+);
