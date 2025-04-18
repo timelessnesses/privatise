@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "privatise-cli",
+]
+
+resolver = "3"

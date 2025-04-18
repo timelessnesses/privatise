@@ -173,4 +173,4 @@ dist
 
 node_modules/
 
-privatise-cli/target
+/target

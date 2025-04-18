@@ -55,7 +55,7 @@ export default {
 	async scheduled(_, env, _2): Promise<void> {
 		let current_time = new Date();
 		let files = await env.privatise_db.prepare("SELECT * FROM files WHERE expires_at < ?")
-			.bind(current_time)
+			.bind(current_time.getTime())
 			.all();
 		if (files.error) {
 			console.error(files.error);
@@ -91,6 +91,10 @@ async function upload(request: Request, env: Env, _: ExecutionContext, handle_en
 	// a week
 	if (expires_at > 604800) {
 		return new Response('Expires is maximum 7 days', { status: 400 });
+	}
+
+	if (!original_file_ext) {
+		return new Response('File extension not found (i was still considering if this should be optional and detect from mimetype instead)', { status: 400 });
 	}
 
 	if (!file) {
@@ -307,17 +311,19 @@ function random_string(length: number): string {
 	return result;
 }
 
-async function check_file(bytes: Uint8Array): Promise<[boolean, { entropy: number, known_magic_numbers?: boolean, mostly_printable?: number }]> {
+async function check_file(bytes: Uint8Array): Promise<[boolean, { entropy: number, known_magic_numbers?: boolean, mostly_printable?: number, possiblity_text_detected?: boolean }]> {
+	// binary
 	if (mostly_printable(bytes) < 0.8) {
-		return [entropy(bytes) > 7 && !(await known_magic_numbers(bytes)), {
+		return [entropy(bytes) >= 6.5 && !(await known_magic_numbers(bytes)), {
 			entropy: entropy(bytes),
 			known_magic_numbers: await known_magic_numbers(bytes),
 			mostly_printable: mostly_printable(bytes)
 		}];
 	} else {
-		return [entropy(bytes) < 5.8, {
+		return [false, {
 			entropy: entropy(bytes),
-			mostly_printable: mostly_printable(bytes)
+			mostly_printable: mostly_printable(bytes),
+			possiblity_text_detected: true
 		}];
 	}
 }

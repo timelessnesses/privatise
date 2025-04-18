@@ -108,6 +108,7 @@ class TestCase(unittest.TestCase):
 			self.assertEqual(info['id'], encryption_info['id'])
 			self.assertEqual(info['expires_at'], encryption_info['expires_at'])
 			self.assertEqual(info['original_file_extension'], "png")
+			print(info)
 
 	def test_delete(self):
 		with open('test.png', 'rb') as f:
